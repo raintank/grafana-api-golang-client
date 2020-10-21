@@ -84,8 +84,7 @@ func (c *Client) request(method, requestPath string, query url.Values, body io.R
 		return nil
 	}
 
-	err = json.Unmarshal(bodyContents, responseStruct)
-	if err != nil {
+	if err := json.Unmarshal(bodyContents, responseStruct); err != nil {
 		return err
 	}
 
@@ -102,7 +101,7 @@ func (c *Client) newRequest(method, requestPath string, query url.Values, body i
 	}
 
 	if c.config.APIKey != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.config.APIKey))
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.config.APIKey))
 	}
 
 	if os.Getenv("GF_LOG") != "" {
@@ -113,6 +112,6 @@ func (c *Client) newRequest(method, requestPath string, query url.Values, body i
 		}
 	}
 
-	req.Header.Add("Content-Type", "application/json")
-	return req, err
+	req.Header.Set("Content-Type", "application/json")
+	return req, nil
 }
