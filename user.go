@@ -44,6 +44,13 @@ type UserSearch struct {
 	AvatarURL     string    `json:"avatarUrl,omitempty"`
 }
 
+// UserOrg represents a Grafana user org.
+type UserOrg struct {
+	Name          string    `json:"name"`
+	OrgID         int64     `json:"orgId"`
+	Role          string    `json:"role"`
+}
+
 // Users fetches and returns Grafana users.
 func (c *Client) Users() (users []UserSearch, err error) {
 	err = c.request("GET", "/api/users", nil, nil, &users)
@@ -71,4 +78,15 @@ func (c *Client) UserUpdate(u User) error {
 		return err
 	}
 	return c.request("PUT", fmt.Sprintf("/api/users/%d", u.ID), nil, bytes.NewBuffer(data), nil)
+}
+
+// UserOrgs fetches and returns the user orgs by ID.
+func (c *Client) UserOrgs(id int64) ([]UserOrg, error) {
+	userOrgs := make([]UserOrg, 0)
+	err := c.request("GET", fmt.Sprintf("/api/users/%d/orgs", id), nil, nil, &userOrgs)
+	if err != nil {
+		return userOrgs, err
+	}
+
+	return userOrgs, err
 }
